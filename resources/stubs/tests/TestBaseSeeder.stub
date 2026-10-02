@@ -1,0 +1,23 @@
+<?php
+
+namespace Database\Seeders\Tests\TestBases;
+
+class {{ testNameUpper }}TestBaseSeeder extends TestBaseSeeder
+{
+    private $bases = [
+        [
+            'name' => '',
+            'code' => ''
+        ],
+    ];
+
+    public function __construct()
+    {
+        return parent::__construct('{{ testCode }}');
+    }
+
+    public function run(): void
+    {
+        $this->setBases($this->bases);
+    }
+}

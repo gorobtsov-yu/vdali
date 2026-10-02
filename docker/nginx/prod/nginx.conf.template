@@ -1,0 +1,59 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${SERVER_IP};
+
+    root /var/www/public;
+    index index.php index.html;
+
+    error_log /var/log/nginx/error.log warn;
+    access_log /var/log/nginx/access.log main buffer=32k flush=5s;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        
+        fastcgi_read_timeout 300;
+        fastcgi_buffers 256 16k;
+        fastcgi_buffer_size 32k;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|webp|woff2?|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+        log_not_found off;
+    }
+
+    location ~* \.(html|xml|txt)$ {
+        expires 1h;
+        add_header Cache-Control "public";
+    }
+
+    location ~ /\.(env|git|htaccess|htpasswd|config|log|sql) {
+        deny all;
+        return 404;
+    }
+
+    fastcgi_hide_header X-Powered-By;
+    
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /var/www/docs;
+    }
+}

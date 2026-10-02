@@ -1,0 +1,23 @@
+name: Test build
+
+on: 
+  pull_request:
+    branches: [master, develop]
+
+env:
+  UID: 1001
+  GID: 1001
+
+jobs:
+  test-build:
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build app
+        run: make dev
+
+      - name: Cleaning
+        run: make docker-down-force

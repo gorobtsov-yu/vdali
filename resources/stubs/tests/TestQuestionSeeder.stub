@@ -1,0 +1,29 @@
+<?php
+
+namespace Database\Seeders\TestsData\TestQuestions;
+
+class {{ testNameUpper }}TestQuestionSeeder extends TestQuestionSeeder
+{
+    /**
+     * [
+     *    [
+     *       Num => Question,      
+     *    ]
+     * ]
+     */
+    private $questions = [
+        [
+            1 => '',
+        ],
+    ];
+
+    public function __construct()
+    {
+        return parent::__construct('{{ testCode }}');
+    }
+
+    public function run(): void
+    {
+        $this->setQuestions($this->questions);
+    }
+}

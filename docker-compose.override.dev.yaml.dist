@@ -1,0 +1,21 @@
+services:
+  nginx:
+    ports:
+      - '${APP_NGINX_PORT:-8000}:80'
+    volumes:
+      - ./docker/nginx/dev/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./:/var/www:cached
+
+  php:
+    build:
+      args:
+        UID: 1000
+        GID: 1000
+
+  postgres:
+    ports:
+      - '${APP_POSTGRES_PORT}:5432'
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}

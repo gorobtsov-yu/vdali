@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  UID: 1001
+  GID: 1001
+
+jobs:
+  deploy:
+    runs-on: deploy
+    
+    steps:
+      - name: Checkout code
+        run: |
+          rm -rf ./* ./.git 2>/dev/null || true
+          git clone https://oauth2:${{ secrets.CD_GITVERSE_TOKEN }}@gitverse.ru/kot_baun/vdali.git .
+          git checkout ${{ github.ref_name }}
+      
+      - name: Pre-init
+        run: |
+          make set-env-prod
+          make set-overrides-prod
+
+      - name: Update .env
+        run: |
+          echo "APP_URL=${{ vars.APP_URL }}" >> .env
+          echo "APP_NGINX_PORT=${{ vars.APP_NGINX_PORT }}" >> .env
+          echo "APP_POSTGRES_PORT=${{ vars.APP_POSTGRES_PORT }}" >> .env
+          echo "DB_HOST=${{ vars.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ vars.DB_PORT }}" >> .env
+          echo "DB_DATABASE=${{ vars.DB_DATABASE }}" >> .env
+          echo "DB_USERNAME=${{ vars.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "GIGACHAT_AUTH_KEY=${{ secrets.GIGACHAT_AUTH_KEY }}" >> .env
+
+      - name: Setup nginx template with IP
+        run: |
+          export SERVER_IP="${{ vars.SERVER_IP }}"
+          envsubst '${SERVER_IP}' < ./docker/nginx/prod/nginx.conf.template > ./docker/nginx/prod/nginx.conf
+          
+      - name: Build project
+        run: |
+          make init
+          
+      - name: Cleanup old images
+        run: docker image prune -f

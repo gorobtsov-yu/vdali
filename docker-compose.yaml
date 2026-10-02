@@ -1,0 +1,49 @@
+services:
+
+  nginx:
+    container_name: ${APP_PROJECT_NAME}-nginx
+    image: nginx:1.30
+    depends_on:
+      - php
+    networks:
+      - vdali_network
+
+  php:
+    container_name: ${APP_PROJECT_NAME}-php
+    build: 
+      dockerfile: docker/dockerfiles/php.dockerfile
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    volumes:
+      - ./:/var/www
+    expose:
+      - '9000'
+    depends_on:
+      - postgres
+    networks:
+      - vdali_network
+
+
+  postgres:
+    container_name: ${APP_PROJECT_NAME}-postgres
+    image: postgres:18
+    volumes:
+      - ./docker/database/data:/var/lib/postgresql
+    networks:
+      - vdali_network
+
+  node:
+    container_name: ${APP_PROJECT_NAME}-node
+    image: node:24
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    entrypoint: 
+    command: tail -f /dev/null 
+    networks:
+      - vdali_network
+    
+networks:
+  vdali_network:
+    driver: bridge

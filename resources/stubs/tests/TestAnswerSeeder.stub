@@ -1,0 +1,37 @@
+<?php
+
+namespace Database\Seeders\TestsData\TestAnswers;
+
+class {{ testNameUpper }}TestAnswerSeeder extends TestAnswerSeeder
+{
+    /**
+     * [
+     *    [
+     *       Question number => [
+     *          'text' => Answer text,
+     *          'test_base_codes' => [Test base codes],
+     *       ]
+     *    ]
+     * ]
+     */
+    private $answers = [
+        [
+            1 => [
+                [
+                    'text' => '',
+                    'test_base_codes' => [''],
+                ],
+            ],
+        ]
+    ];
+
+    public function __construct()
+    {
+        return parent::__construct('{{ testCode }}');
+    }
+
+    public function run(): void
+    {
+        $this->setAnswers($this->answers);
+    }
+}

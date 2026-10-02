@@ -1,0 +1,16 @@
+<?php
+
+namespace Database\Seeders\Tests\Tests;
+
+class {{ testNameUpper }}TestSeeder extends TestSeeder
+{
+    private $test = [
+        'name' => '',
+        'code' => '{{ testCode }}',
+    ];
+
+    public function run(): void
+    {
+        $this->setTest($this->test);
+    }
+}
